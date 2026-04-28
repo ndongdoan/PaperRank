@@ -1,24 +1,24 @@
 import numpy as np
 
-def compute_pagerank(adj_matrix, d = 0.85, eps = 1e-6, max_iter = 100) -> np.ndarray:
 
+def compute_pagerank(adj_matrix, d=0.85, eps=1e-6, max_iter=100) -> np.ndarray:
     """
     Calculate PageRank score using matrix multiplication
     v_new = d * adj_matrix * v + (1 - d) / n
     """
-    
+
     M = adj_matrix.copy()
 
     n = M.shape[0]
 
     # Dangling nodes
-    column_sums = np.sum(M, axis = 0)
+    column_sums = np.sum(M, axis=0)
     for j in range(n):
         if column_sums[j] == 0:
             M[:, j] = 1.0 / n
         else:
             M[:, j] /= column_sums[j]
-    
+
     # Initial PageRank score vector
     v = np.ones(n) / n
 
@@ -27,8 +27,7 @@ def compute_pagerank(adj_matrix, d = 0.85, eps = 1e-6, max_iter = 100) -> np.nda
 
         if np.linalg.norm(v_next - v, 1) < eps:
             return v_next
-        
+
         v = v_next
-    
+
     return v
-    

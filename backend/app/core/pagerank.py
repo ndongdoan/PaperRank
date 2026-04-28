@@ -1,10 +1,12 @@
 import numpy as np
 
-def compute_pagerank(adj_matrix, d = 0.85, eps = 1e-6, max_iter = 100):
+def compute_pagerank(adj_matrix, d = 0.85, eps = 1e-6, max_iter = 100) -> np.ndarray:
+
     """
     Calculate PageRank score using matrix multiplication
     v_new = d * adj_matrix * v + (1 - d) / n
     """
+    
     M = adj_matrix.copy()
 
     n = M.shape[0]

@@ -5,7 +5,7 @@ from typing import List, Dict, Tuple
 SEMANTIC_SCHOLAR_API = "https://api.semanticscholar.org/graph/v1"
 
 async def fetch_papers(query: str, limit: int = 20) -> Tuple[List[Dict], np.ndarray]:
-    headers = {
+    header = {
         "Content-Type": "application/json"
     }
 
@@ -14,10 +14,10 @@ async def fetch_papers(query: str, limit: int = 20) -> Tuple[List[Dict], np.ndar
         search_params = {
             "query": query,
             "limit": limit,
-            "fields": "paperId, title, authors, references, year"
+            "fields": "paperId,title,authors,references,year"
         }
 
-        response = await client.get(f"{SEMANTIC_SCHOLAR_API}/paper/search", params = search_params, headers = headers)
+        response = await client.get(f"{SEMANTIC_SCHOLAR_API}/paper/search", params = search_params, headers = header)
 
         if response.status_code != 200:
             raise Exception(f"API Semantic Scholar Error: {response.status_code}")

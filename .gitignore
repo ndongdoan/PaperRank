@@ -8,4 +8,5 @@ out/
 build/
 dist/
 .vscode
+.cache/
 EOF

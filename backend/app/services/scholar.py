@@ -1,16 +1,33 @@
+import os
 import httpx
 import numpy as np
+from diskcache import Cache
+from pathlib import Path
 from typing import List, Dict, Tuple
-from fastapi import HTTPException 
+from fastapi import HTTPException
+from dotenv import load_dotenv 
 
-SEMANTIC_SCHOLAR_API = "https://api.semanticscholar.org/graph/v1"
+load_dotenv()
+
+CURRENT_DIR = Path(__file__).parent
+cache_path = CURRENT_DIR / "../../.cache"
+cache = Cache(str(cache_path))
+
+SEMANTIC_SCHOLAR_API = "https://api.semanticscholar.org/graph/v1"   
+SEMANTIC_SCHOLAR_API_KEY = os.getenv("SEMANTIC_SCHOLAR_API_KEY")
 
 async def fetch_papers(query: str, limit: int = 20) -> Tuple[List[Dict], np.ndarray]:
     if not query or len(query.strip()) < 2:
         raise HTTPException(status_code = 400, detail = "Keyword is too short!")
+
+    cache_key = f"{query}_{limit}"
+    if cache_key in cache:
+        print(f"--- Retrieving data from cache for: {query} ---")
+        return cache[cache_key]
     
     header = {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "x-api-key": SEMANTIC_SCHOLAR_API_KEY
     }
 
     async with httpx.AsyncClient(timeout = 30.0) as client:
@@ -24,12 +41,7 @@ async def fetch_papers(query: str, limit: int = 20) -> Tuple[List[Dict], np.ndar
 
             response = await client.get(f"{SEMANTIC_SCHOLAR_API}/paper/search", params = search_params, headers = header)
 
-            if response.status_code == 429:
-                raise HTTPException(status_code = 429, detail = "API Rate Limit: Please try again after 1 minute.")
-
-            if response.status_code != 200:
-                raise Exception(f"API Semantic Scholar Error: {response.status_code}")
-
+            response.raise_for_status()
             data = response.json()
             papers = data.get("data", [])
 
@@ -55,7 +67,10 @@ async def fetch_papers(query: str, limit: int = 20) -> Tuple[List[Dict], np.ndar
                         j = id_to_idx[ref_id]
                         adj_matrix[j, i] = 1
             
-            return papers, adj_matrix
+            result = (papers, adj_matrix)
+            cache.set(cache_key, result, expire = 86400 * 7)
+
+            return result
     
-        except httpx.RequestError:
-            raise HTTPException(status_code = 503, detail = "Failed to connect to Semantic Scholar server.")
+        except Exception as e:
+            raise HTTPException(status_code = 500, detail = str(e))

@@ -1,6 +1,7 @@
-import os
+import os, json
 import httpx
 import numpy as np
+import redis.asyncio as redis
 from diskcache import Cache
 from pathlib import Path
 from typing import List, Dict, Tuple
@@ -10,8 +11,34 @@ from dotenv import load_dotenv
 load_dotenv()
 
 CURRENT_DIR = Path(__file__).parent
-cache_path = CURRENT_DIR / "../../.cache"
-cache = Cache(str(cache_path))
+LOCAL_CACHE_PATH = CURRENT_DIR / "../../.cache"
+
+USE_REDIS = os.getenv("USE_REDIS", "false").lower() == "true"
+REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
+
+if USE_REDIS:
+    r = redis.from_url(REDIS_URL, decode_response=True)
+    print(">>> [INFO] Using Redis Cache ---")
+else:
+    local_cache = Cache(str(LOCAL_CACHE_PATH))
+    print(">>> [INFO] Using DiskCache (Local)")
+
+
+async def get_cache(key: str):
+    if USE_REDIS:
+        data = await r.get(key)
+        return json.loads(data) if data else None
+    else:
+        return local_cache.get(key)
+
+
+async def set_cache(key: str, value: dict, expire: int = 86400 * 30):
+    if USE_REDIS:
+        await r.set(key, json.dumps(value), ex=expire)
+    else:
+        local_cache.set(key, value, expire=expire)
+
+cache = Cache(str(LOCAL_CACHE_PATH))
 
 SEMANTIC_SCHOLAR_API = "https://api.semanticscholar.org/graph/v1"
 SEMANTIC_SCHOLAR_API_KEY = os.getenv("SEMANTIC_SCHOLAR_API_KEY")
@@ -26,9 +53,11 @@ async def fetch_papers(query: str, limit: int = 20, year: str = None) -> Tuple[L
         raise HTTPException(status_code=400, detail="Keyword is too short!")
 
     cache_key = f"{query}_{limit}_{year}"
-    if cache_key in cache:
-        print(f"--- Retrieving data from cache for: {query} ---")
-        return cache[cache_key]
+
+    cached = await get_cache(cache_key) 
+    if cached:
+        print(f">>> [INFO] Retrieving data from cache for: {query}")
+        return cached["papers"], np.array(cached["adj_matrix"])
 
     headers = {
         "Content-Type": "application/json",
@@ -80,9 +109,13 @@ async def fetch_papers(query: str, limit: int = 20, year: str = None) -> Tuple[L
                         j = id_to_idx[ref_id]
                         adj_matrix[j, i] = 1
 
+            result_to_cache = {
+                "papers": papers,
+                "adj_matrix": adj_matrix.tolist()
+            }   
+            await set_cache(cache_key, result_to_cache)
+            
             result = (papers, adj_matrix)
-            cache.set(cache_key, result, expire=86400 * 30)
-
             return result
 
         except Exception as e:

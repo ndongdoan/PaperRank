@@ -52,13 +52,14 @@ async def fetch_papers(query: str, limit: int = 20) -> Tuple[List[Dict], np.ndar
 
             response.raise_for_status()
             data = response.json()
-            papers = data.get("data", [])
+            raw_papers = data.get("data", [])
+            papers = [p for p in raw_papers if p.get("paperId") and p.get("title")]
 
             if not papers:
                 return [], np.array([])
 
             # Paper ID list
-            paper_ids = [p["paperId"] for p in papers if p["paperId"]]
+            paper_ids = [p["paperId"] for p in papers]
             id_to_idx = {pid: i for i, pid in enumerate(paper_ids)}
             n = len(paper_ids)
             # Initial matrix
@@ -77,7 +78,7 @@ async def fetch_papers(query: str, limit: int = 20) -> Tuple[List[Dict], np.ndar
                         adj_matrix[j, i] = 1
 
             result = (papers, adj_matrix)
-            cache.set(cache_key, result, expire=86400 * 7)
+            cache.set(cache_key, result, expire=86400 * 30)
 
             return result
 

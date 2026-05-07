@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+@theme {
+  /* Định nghĩa các biến màu sắc cho Light Mode */
+  --color-background: #ffffff;
+  --color-foreground: #111827;
+  --color-accent: #3b82f6; /* Xanh dương tri thức */
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #111827;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: 'Inter', sans-serif; /* Font sạch sẽ, hiện đại */
+}

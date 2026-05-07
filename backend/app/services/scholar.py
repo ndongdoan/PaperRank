@@ -17,7 +17,7 @@ SEMANTIC_SCHOLAR_API = "https://api.semanticscholar.org/graph/v1"
 SEMANTIC_SCHOLAR_API_KEY = os.getenv("SEMANTIC_SCHOLAR_API_KEY")
 
 
-async def fetch_papers(query: str, limit: int = 20) -> Tuple[List[Dict], np.ndarray]:
+async def fetch_papers(query: str, limit: int = 20, year: str = None) -> Tuple[List[Dict], np.ndarray]:
     """
     GET papers from Semantic Scholar API based on the query and limit, normalize it into a Python list and return that list along with a matrix of connections between those papers
     """
@@ -25,7 +25,7 @@ async def fetch_papers(query: str, limit: int = 20) -> Tuple[List[Dict], np.ndar
     if not query or len(query.strip()) < 2:
         raise HTTPException(status_code=400, detail="Keyword is too short!")
 
-    cache_key = f"{query}_{limit}"
+    cache_key = f"{query}_{limit}_{year}"
     if cache_key in cache:
         print(f"--- Retrieving data from cache for: {query} ---")
         return cache[cache_key]
@@ -43,6 +43,9 @@ async def fetch_papers(query: str, limit: int = 20) -> Tuple[List[Dict], np.ndar
                 "limit": limit,
                 "fields": "paperId,title,authors,references,year",
             }
+
+            if year and year.strip():
+                search_params["year"] = year.strip()
 
             response = await client.get(
                 f"{SEMANTIC_SCHOLAR_API}/paper/search",

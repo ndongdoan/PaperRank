@@ -17,7 +17,7 @@ USE_REDIS = os.getenv("USE_REDIS", "false").lower() == "true"
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
 
 if USE_REDIS:
-    r = redis.from_url(REDIS_URL, decode_response=True)
+    r = redis.from_url(REDIS_URL, decode_responses=True)
     print(">>> [INFO] Using Redis Cache ---")
 else:
     local_cache = Cache(str(LOCAL_CACHE_PATH))

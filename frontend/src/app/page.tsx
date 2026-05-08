@@ -64,15 +64,15 @@ export default function Home() {
   }, [damping]);
 
   return (
-    <main className="min-h-screen bg-[#FDFDFD] relative overflow-x-hidden z-100">
+    <main className="bg-[#FDFDFD] relative min-h-screen flex flex-col">
       <Navbar onLogoClick={handleReset} />
       {/* Background */}
-      <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+      <div className="fixed top-0 left-0 w-full h-full opacity-10 pointer-events-none overflow-hidden z-0">
         <div className="absolute top-[-5%] left-[-5%] w-[50%] h-[50%] bg-blue-100 rounded-full blur-[150px]" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-50 rounded-full blur-[150px]" />
       </div>
 
-      <div className="relative flex flex-col items-center">
+      <div className="relative flex flex-col items-center w-full flex-1">
         
         {/* 1. Hero Section */}
         <motion.div 
@@ -116,9 +116,9 @@ export default function Home() {
               initial={{ opacity: 0, y: 60 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.8 }}
-              className="container mx-auto px-4 mt-8 w-full relative"
+              className="container mx-auto px-4 mt-4 w-full h-[85vh] min-h-162.5 pb-12"
             >
-              <div className="h-[78vh] w-full bg-white rounded-[40px] border border-gray-100 shadow-2xl relative overflow-hidden">
+              <div className="h-full w-full bg-white rounded-[40px] border border-gray-100 shadow-2xl relative overflow-hidden">
                 
                 {/* Damping factor */}
                 <div className="absolute top-6 left-6 z-20 bg-white/60 backdrop-blur-xl p-5 rounded-3xl border border-white/20 shadow-sm flex flex-col gap-4 min-w-60">
@@ -262,7 +262,7 @@ export default function Home() {
       </AnimatePresence>
 
       <footer className={`py-12 border-t border-gray-50 text-center transition-opacity duration-500 ${hasSearched ? "opacity-0" : "opacity-100"}`}>
-        <p className="text-gray-300 text-[12px] font-bold tracking-[0.3em] uppercase">
+        <p className="text-gray-300 text-[12px] font-bold tracking-[0.2em] uppercase">
           PaperRank • 2026
         </p>
       </footer>

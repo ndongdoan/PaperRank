@@ -89,7 +89,7 @@ export default function SearchBar({ onSearch, isCollapsed }: SearchBarProps) {
                   isCollapsed ? "scale-110 origin-top-right" : ""
                 }`}
               >
-                {/* Phần chỉnh Limit */}
+                {/* Limit */}
                 <div className="flex items-center justify-between gap-4">
                   <span className="text-xs font-bold text-gray-400 uppercase tracking-widest whitespace-nowrap">Limit:</span>
                   <input 
@@ -100,10 +100,9 @@ export default function SearchBar({ onSearch, isCollapsed }: SearchBarProps) {
                   />
                 </div>
 
-                {/* Đường kẻ ngăn cách nhẹ */}
                 <div className="h-px bg-gray-100 w-full" />
 
-                {/* Phần chỉnh Year */}
+                {/* Year filter */}
                 <div className="flex flex-col gap-2">
                   <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Year Range:</span>
                   <input 
@@ -114,7 +113,7 @@ export default function SearchBar({ onSearch, isCollapsed }: SearchBarProps) {
                     className="w-full bg-gray-50 px-3 py-2 rounded-lg text-sm font-mono text-blue-600 outline-none"
                   />
                   
-                  {/* Các nút chọn nhanh (Presets) */}
+                  {/* Preset buttons */}
                   <div className="flex flex-wrap gap-1.5 mt-1">
                     {["Last 5y", "Last 10y"].map((p) => (
                       <button

@@ -10,15 +10,15 @@ from typing import Dict
 app = FastAPI(title="PaperRank API")
 
 load_dotenv()
-origins_str = os.getenv("ALLOWED_ORIGINS")
-origins = [origin.strip() for origin in origins_str.split(",")]
+origins_str = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,https://paper-rank.vercel.app")
+origins = [origin.strip() for origin in origins_str.split(",") if origin.strip()]
 
 # CORS configuration
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["GET"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 

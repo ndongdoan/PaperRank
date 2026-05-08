@@ -1,11 +1,10 @@
-// src/lib/api.ts
 export interface PaperNode {
   id: string;
   title: string;
   authors: string[];
   year: number;
   rank: number;
-  val: number; // Kích thước hiển thị đã tính toán từ Backend
+  val: number;
 }
 
 export interface PaperLink {

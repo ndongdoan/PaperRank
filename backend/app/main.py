@@ -10,7 +10,7 @@ from typing import Dict
 app = FastAPI(title="PaperRank API")
 
 load_dotenv()
-origins_str = os.getenv("ALLOWED_ORIGINS").split(",")
+origins_str = os.getenv("ALLOWED_ORIGINS")
 origins = [origin.strip() for origin in origins_str.split(",")]
 
 # CORS configuration

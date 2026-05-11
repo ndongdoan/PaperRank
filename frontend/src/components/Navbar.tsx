@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from 'next/image';
 
 interface NavbarProps {
   onLogoClick?: () => void;
@@ -16,10 +17,22 @@ export default function Navbar({ onLogoClick }: NavbarProps) {
       <div className="max-w-7xl mx-auto flex items-center justify-between bg-white/40 backdrop-blur-xl border border-white/20 rounded-2xl px-6 py-3 shadow-sm">
         {/* Logo */}
         <div onClick={onLogoClick} className="flex items-center gap-2 group cursor-pointer">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold group-hover:rotate-12 transition-transform">
-            P
+          <div className="flex items-center gap-3">
+            {/* Logo Icon */}
+            <div className="relative w-8 h-8">
+              <Image 
+                src="/icon.svg" 
+                alt="PaperRank Logo" 
+                fill
+                className="object-contain"
+              />
+            </div>
+
+            {/* Text Logo */}
+            <h1 className="text-xl font-bold tracking-tight text-slate-900 font-serif italic">
+              Paper <span className="text-blue-600">Rank</span>
+            </h1>
           </div>
-          <span className="text-xl font-bold tracking-tighter text-gray-900 font-serif italic">PaperRank</span>
         </div>
 
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">

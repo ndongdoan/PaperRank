@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   title: "PaperRank | Citation Network Discovery",
   description: "Uncover the world's most influential research papers with a single click.",
   icons: {
-    icon: "/favicon.ico",
+    icon: "/logo.svg",
   },
 };
 

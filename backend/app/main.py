@@ -56,7 +56,7 @@ async def rank_papers(
     if not papers:
         return {"nodes": [], "links": []}
 
-    ranks = compute_pagerank(adj_matrix, d=d)
+    ranks, M_matrix, iters = compute_pagerank(adj_matrix, d=d)
 
     nodes = []
     max_rank = max(ranks) if len(ranks) > 0 else 1
@@ -82,5 +82,18 @@ async def rank_papers(
                     {"source": papers[i]["paperId"], "target": papers[j]["paperId"]}
                 )
 
-    return {"query": final_query, "nodes": nodes, "links": links}
+    matrix_simulation = {
+        "adjacency_matrix": adj_matrix.tolist(),
+        "stochastic_matrix": M_matrix.tolist(),
+        "final_vector": ranks.tolist(),
+        "iterations": iters,
+        "damping_factor": d
+    }
+
+    return {
+        "query": final_query, 
+        "nodes": nodes, 
+        "links": links,
+        "matrix_simulation": matrix_simulation
+    }
 
